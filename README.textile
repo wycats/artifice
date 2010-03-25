@@ -1,0 +1,31 @@
+Artifice allows you to replace the Net::HTTP subsystem of Ruby
+with an equivalent that routes all requests to a Rack application.
+
+You can use Sinatra, raw Rack, or even Rails as your application,
+allowing you to build up an equivalent to the remote service you
+are mocking out using familiar and convenient tools to route
+requests and build up responses.
+
+h1. Usage
+
+First, require artifice.
+
+<pre>require "artifice"</pre>
+
+Next, activate artifice using a Rack endpoint.
+
+<pre>Artifice.activate_with(rack_endpoint)</pre>
+
+You're done!
+
+You can also pass a block to @activate_with@:
+
+<pre>Artifice.activate_with(rack_endpoint) do
+  # make some requests using Net::HTTP
+end</pre>
+
+This will replace Net::HTTP for the duration of the block only.
+
+You can deactivate Artifice by calling @deactivate@
+
+<pre>Artifice.deactivate</pre>
