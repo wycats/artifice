@@ -1,4 +1,3 @@
-gem "rack"
 gem "rack-test"
 
 group :test do

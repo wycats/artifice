@@ -17,7 +17,5 @@ Gem::Specification.new do |s|
   s.rdoc_options << '--exclude' << '.'
   s.has_rdoc = false
 
-  Bundler.definition.dependencies.select {|d| d.groups.include?(:default) }.each do |d|
-    s.add_dependency d.name, d.requirement.to_s
-  end
+  s.add_dependency "rack-test"
 end
