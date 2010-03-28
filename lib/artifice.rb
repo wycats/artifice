@@ -89,7 +89,7 @@ private
         prefix = "#{scheme}://#{addr_port}"
 
         response = rack_request.request("#{prefix}#{req.path}",
-          {:method => req.method, :input => body})
+          {:method => req.method, :input => body || req.body})
 
         make_net_http_response(response, &block)
       end

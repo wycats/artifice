@@ -138,5 +138,18 @@ describe "Artifice" do
       it_should_behave_like "a working GET request"
       it_should_behave_like "a working HTTP request"
     end
+    
+    describe "and make a POST request with Net::HTTP::Post.new" do
+      before do
+        Net::HTTP.start('google.com') do |http|
+          req = Net::HTTP::Post.new('/index')
+          req.body = 'foo=bar'
+          @response = http.request(req)
+        end
+      end
+
+      it_should_behave_like "a working POST request"
+      it_should_behave_like "a working HTTP request"
+    end
   end
 end
