@@ -29,3 +29,23 @@ This will replace Net::HTTP for the duration of the block only.
 You can deactivate Artifice by calling @deactivate@
 
 <pre>Artifice.deactivate</pre>
+
+Artifice will restore the last endpoint after a block-style call, so the following will work as expected:
+
+<pre>Artifice.activate_with(global_endpoint)
+
+Artifice.activate_with(block_endpoint) do
+  # make some requests using Net::HTTP
+end
+
+# make any requests after the block and they'll hit the global_endpoint</pre>
+
+Furthermore, Artifice will allow you to nest block-style calls to @activate_with@ like so:
+
+<pre>Artifice.activate_with(outer_endpoint) do
+  # make some requests that hit an endpoint
+  Artifice.activate_with(inner_endpoint) do
+    # make some requests that require a different endpoint
+  end
+  # make some other requests that will hit the outer block's endpoint
+end
