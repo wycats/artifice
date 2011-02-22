@@ -5,6 +5,8 @@ require "net/https"
 module Artifice
   NET_HTTP = ::Net::HTTP
 
+  @@endpoints = []
+
   # Activate Artifice with a particular Rack endpoint.
   #
   # Calling this method will replace the Net::HTTP system
@@ -16,12 +18,14 @@ module Artifice
   #   In this case, Artifice will be used only for
   #   the duration of the block
   def self.activate_with(endpoint)
+    old_endpoint = Net::HTTP.endpoint if ::Net::HTTP != NET_HTTP
     Net::HTTP.endpoint = endpoint
-    replace_net_http(Artifice::Net::HTTP)
+    replace_net_http(Artifice::Net::HTTP) if ::Net::HTTP == NET_HTTP
 
     if block_given?
+      @@endpoints.push(old_endpoint) if !old_endpoint.nil?
       yield
-      deactivate
+      @@endpoints.empty? ? deactivate : Net::HTTP.endpoint = @@endpoints.pop
     end
   end
 

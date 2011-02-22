@@ -152,4 +152,44 @@ describe "Artifice" do
       it_should_behave_like "a working HTTP request"
     end
   end
+
+  describe "when activating with a block" do
+    SecondApp = proc do |env|
+      [200, {"Content-Type"  => "text/html",
+         "X-Test-Method" => env["REQUEST_METHOD"],
+         "X-Test-Input"  => env["rack.input"].read,
+         "X-Test-Scheme" => env["rack.url_scheme"],
+         "X-Test-Host"   => env["HTTP_HOST"] || env["SERVER_NAME"],
+         "X-Test-Port"   => env["SERVER_PORT"]},
+       ["Second App"]
+      ]
+    end
+
+    it "restores the last rack endpoint afterward" do
+      Artifice.activate_with(FakeApp)
+
+      Artifice.activate_with(SecondApp) do
+        @response = Net::HTTP.get(URI.parse("http://google.com/get"))
+        @response.should == 'Second App'
+      end
+
+      @response = Net::HTTP.get(URI.parse("http://google.com/get"))
+      @response.should == 'Hello world'
+    end
+
+    it "can be nested" do
+      Artifice.activate_with(FakeApp) do
+        @response = Net::HTTP.get(URI.parse("http://google.com/get"))
+        @response.should == 'Hello world'
+
+        Artifice.activate_with(SecondApp) do
+          @response = Net::HTTP.get(URI.parse("http://google.com/get"))
+          @response.should == 'Second App'
+        end
+
+        @response = Net::HTTP.get(URI.parse("http://google.com/get"))
+        @response.should == 'Hello world'
+      end
+    end
+  end
 end

@@ -1,3 +1,5 @@
+source :rubygems
+
 gem "rack-test"
 
 group :test do

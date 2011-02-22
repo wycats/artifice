@@ -1,30 +1,20 @@
---- 
-dependencies: 
-  rspec: 
-    group: 
-    - :test
-    version: = 2.0.0.beta.4
-  rack: 
-    group: 
-    - :default
-    version: ">= 0"
-  rack-test: 
-    group: 
-    - :default
-    version: ">= 0"
-specs: 
-- rack: 
-    version: 1.1.0
-- rack-test: 
-    version: 0.5.3
-- rspec-core: 
-    version: 2.0.0.beta.4
-- rspec-expectations: 
-    version: 2.0.0.beta.4
-- rspec-mocks: 
-    version: 2.0.0.beta.4
-- rspec: 
-    version: 2.0.0.beta.4
-hash: 889e870bd7875bdc06549b9e3689e9a530c5905a
-sources: []
+GEM
+  remote: http://rubygems.org/
+  specs:
+    rack (1.2.1)
+    rack-test (0.5.7)
+      rack (>= 1.0)
+    rspec (2.0.0.beta.4)
+      rspec-core (= 2.0.0.beta.4)
+      rspec-expectations (= 2.0.0.beta.4)
+      rspec-mocks (= 2.0.0.beta.4)
+    rspec-core (2.0.0.beta.4)
+    rspec-expectations (2.0.0.beta.4)
+    rspec-mocks (2.0.0.beta.4)
 
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rack-test
+  rspec (= 2.0.0.beta.4)
