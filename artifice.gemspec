@@ -15,7 +15,6 @@ Gem::Specification.new do |s|
   s.require_path       = 'lib'
 
   s.rdoc_options << '--exclude' << '.'
-  s.has_rdoc = false
 
   s.add_dependency "rack-test"
 end
