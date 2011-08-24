@@ -58,7 +58,7 @@ describe "Artifice" do
            "X-Test-Method" => env["REQUEST_METHOD"],
            "X-Test-Input"  => env["rack.input"].read,
            "X-Test-Scheme" => env["rack.url_scheme"],
-           "X-Test-Host"   => env["HTTP_HOST"] || env["SERVER_NAME"],
+           "X-Test-Host"   => env["SERVER_NAME"],
            "X-Test-Port"   => env["SERVER_PORT"]},
       ["Hello world"]
     ]
