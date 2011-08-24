@@ -170,13 +170,12 @@ describe "Artifice" do
     end
 
     it "deactivates even if an exception is raised from within the block" do
-      begin
+      lambda {
         Artifice.activate_with( lambda {} ) do
           ::Net::HTTP.should == Artifice::Net::HTTP
           raise 'Boom!'
         end
-      rescue
-      end
+      }.should raise_error
     end
   end
 end
