@@ -20,8 +20,11 @@ module Artifice
     replace_net_http(Artifice::Net::HTTP)
 
     if block_given?
-      yield
-      deactivate
+      begin
+        yield
+      ensure
+        deactivate
+      end
     end
   end
 
