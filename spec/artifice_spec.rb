@@ -152,4 +152,30 @@ describe "Artifice" do
       it_should_behave_like "a working HTTP request"
     end
   end
+
+  describe "when activating with a block" do
+    
+    before do
+      ::Net::HTTP.should == NET_HTTP
+    end
+
+    after do
+      ::Net::HTTP.should == NET_HTTP
+    end
+
+    it "deactivates automatically after the block is executed" do
+      Artifice.activate_with( lambda {} ) do
+        ::Net::HTTP.should == Artifice::Net::HTTP
+      end
+    end
+
+    it "deactivates even if an exception is raised from within the block" do
+      lambda {
+        Artifice.activate_with( lambda {} ) do
+          ::Net::HTTP.should == Artifice::Net::HTTP
+          raise 'Boom!'
+        end
+      }.should raise_error
+    end
+  end
 end
