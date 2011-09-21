@@ -178,4 +178,32 @@ describe "Artifice" do
       }.should raise_error
     end
   end
+
+  describe Artifice, "#reactivate" do
+    
+    before do
+      @endpoint = lambda {|env| [ 200, {}, [] ] }
+
+      Artifice.activate_with @endpoint
+      Artifice::Net::HTTP.endpoint.should == @endpoint
+      ::Net::HTTP.should == Artifice::Net::HTTP
+
+      Artifice.deactivate
+      ::Net::HTTP.should == NET_HTTP
+    end
+
+    it "reactivates Artifice with the last endpoint that was used" do
+      Artifice.reactivate
+      Artifice::Net::HTTP.endpoint.should == @endpoint
+      ::Net::HTTP.should == Artifice::Net::HTTP
+    end
+
+    it "can reactivate within a block" do
+      Artifice.reactivate do
+        Artifice::Net::HTTP.endpoint.should == @endpoint
+        ::Net::HTTP.should == Artifice::Net::HTTP
+      end
+      ::Net::HTTP.should == NET_HTTP
+    end
+  end
 end
