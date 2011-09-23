@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'artifice'
-  s.version     = '0.6'
+  s.version     = '0.6.1'
   s.summary     = 'Use a Rack application for mock HTTP requests'
   s.description = 'Replaces Net::HTTP with a subclass that routes all requests to a Rack application'
   s.required_ruby_version = '>= 1.8.6'

@@ -15,8 +15,28 @@ module Artifice
   # @yield An optional block that uses Net::HTTP
   #   In this case, Artifice will be used only for
   #   the duration of the block
-  def self.activate_with(endpoint)
+  def self.activate_with(endpoint, &block)
+    activate_for(endpoint, nil, nil, &block)
+  end
+
+  # Activate Artifice with a particular Rack endpoint,
+  # but only for a specific host an port.
+  #
+  # Calling this method will replace the Net::HTTP system
+  # with a replacement that routes all requests to the
+  # Rack endpoint.
+  #
+  # @param [#call] endpoint A valid Rack endpoint
+  # @param [#call] host A host to match for the Rack endpoint.
+  # @param [#call] port An optional port to match for the Rack endpoint.
+  # @yield An optional block that uses Net::HTTP
+  #   In this case, Artifice will be used only for
+  #   the duration of the block
+  def self.activate_for(endpoint, host, port = nil, &block)
+    Net::HTTP.host = host
+    Net::HTTP.port = port
     Net::HTTP.endpoint = endpoint
+
     replace_net_http(Artifice::Net::HTTP)
 
     if block_given?
@@ -56,6 +76,35 @@ private
     class HTTP < ::Net::HTTP
       class << self
         attr_accessor :endpoint
+        attr_accessor :host
+        attr_accessor :port
+      end
+
+      # If the Artifice.host is nil, it means that #activate_with has been
+      # called and we always want to use the endpoint. If it is not nil but
+      # the Artifice.port is nil, check if Artifice.host matches @address;
+      # if neither is nil, then check both @address and @port. This
+      # determines whether we use the endpoint or we forward the calls to
+      # the parent class.
+      #
+      # Note that the match is a simplistic exact match on both host and
+      # port.
+      def initialize(address, port = nil)
+        super
+
+        if self.class.host.nil?
+          @use_rack_endpoint = true
+        elsif self.class.port.nil?
+          @use_rack_endpoint = (self.class.host == @address)
+        else
+          @use_rack_endpoint = (self.class.host == @address &&
+                                self.class.port == @port)
+        end
+      end
+
+      # True if we're supposed to use the endpoint.
+      def use_rack_endpoint?
+        @use_rack_endpoint
       end
 
       # Net::HTTP uses a @newimpl instance variable to decide whether
@@ -63,8 +112,8 @@ private
       # Net::HTTP, we must set it
       @newimpl = true
 
-      # We don't need to connect, so blank out this method
       def connect
+        super unless use_rack_endpoint?
       end
 
       # Replace the Net::HTTP request method with a method
@@ -82,19 +131,23 @@ private
       #   this method will yield the Net::HTTPResponse to
       #   it after the body is read.
       def request(req, body = nil, &block)
-        rack_request = RackRequest.new(self.class.endpoint)
+        if use_rack_endpoint?
+          rack_request = RackRequest.new(self.class.endpoint)
 
-        req.each_header do |header, value|
-          rack_request.header(header, value)
+          req.each_header do |header, value|
+            rack_request.header(header, value)
+          end
+
+          scheme = use_ssl? ? "https" : "http"
+          prefix = "#{scheme}://#{addr_port}"
+
+          response = rack_request.request("#{prefix}#{req.path}",
+            {:method => req.method, :input => body || req.body})
+
+          make_net_http_response(response, &block)
+        else
+          super
         end
-
-        scheme = use_ssl? ? "https" : "http"
-        prefix = "#{scheme}://#{addr_port}"
-
-        response = rack_request.request("#{prefix}#{req.path}",
-          {:method => req.method, :input => body || req.body})
-
-        make_net_http_response(response, &block)
       end
 
     private
