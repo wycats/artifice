@@ -151,6 +151,19 @@ describe "Artifice" do
       it_should_behave_like "a working POST request"
       it_should_behave_like "a working HTTP request"
     end
+
+    describe "and make a POST request with a streamed body" do
+      before do
+        Net::HTTP.start('google.com') do |http|
+          req = Net::HTTP::Post.new('/index')
+          req.body_stream = Object.new.tap{|o| def o.read; 'foo=bar'; end }
+          @response = http.request(req)
+        end
+      end
+
+      it_should_behave_like "a working POST request"
+      it_should_behave_like "a working HTTP request"
+    end
   end
 
   describe "when activating with a block" do
