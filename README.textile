@@ -29,3 +29,26 @@ This will replace Net::HTTP for the duration of the block only.
 You can deactivate Artifice by calling @deactivate@
 
 <pre>Artifice.deactivate</pre>
+
+h2. Limited Activation
+
+This version of Artifice can also be used to limit activation and
+redirection to a specific host and optoinal port. This uses a
+simplistic exact match; there is even no case unification at this
+point.
+
+<pre>Artifice.activate_for(rack_endpoint, host, port)</pre>
+
+This will forward requests to the @rack_endpoint@ only if the host
+and port match.
+
+As with normal usage, you can also pass a block to @activate_for@:
+
+<pre>Artifice.activate_for(rack_endpoint, host, port) do
+  # make some requests using Net::HTTP
+end</pre>
+
+Artifice activated with @activate_for@ way is still deactivated
+with @deactivate@:
+
+<pre>Artifice.deactivate</pre>

@@ -3,7 +3,7 @@ require "bundler"
 Bundler.setup
 
 task :spec do
-  system "spec -cfs spec"
+  system "bundle exec rspec -cfs spec"
 end
 
 task :gem do
