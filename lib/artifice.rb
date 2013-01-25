@@ -90,9 +90,10 @@ private
 
         scheme = use_ssl? ? "https" : "http"
         prefix = "#{scheme}://#{addr_port}"
+        body_stream_contents = req.body_stream.read if req.body_stream
 
         response = rack_request.request("#{prefix}#{req.path}",
-          {:method => req.method, :input => body || req.body})
+          {:method => req.method, :input => body || req.body || body_stream_contents})
 
         make_net_http_response(response, &block)
       end
