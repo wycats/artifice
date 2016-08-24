@@ -2,12 +2,9 @@ require "rubygems"
 require "bundler"
 Bundler.setup
 
-task :spec do
-  system "spec -cfs spec"
-end
+require "bundler/gem_tasks"
 
-task :gem do
-  system "bundle exec gem build artifice.gemspec"
-end
+require "rspec/core/rake_task"
+RSpec::Core::RakeTask.new
 
 task :default => :spec
