@@ -33,6 +33,11 @@ module Artifice
     replace_net_http(NET_HTTP)
   end
 
+  # Reactivate the last Artifice replacement
+  def self.reactivate(&block)
+    activate_with(Net::HTTP.endpoint, &block)
+  end
+
 private
   def self.replace_net_http(value)
     ::Net.class_eval do
