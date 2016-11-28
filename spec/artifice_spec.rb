@@ -1,5 +1,9 @@
 require "net/http"
 
+RSpec.configure do |config|
+  config.expect_with(:rspec) { |c| c.syntax = :should }
+end
+
 shared_examples_for "a working request" do
   it "gets response headers" do
     @response["Content-Type"].should  == "text/html"
@@ -138,7 +142,7 @@ describe "Artifice" do
       it_should_behave_like "a working GET request"
       it_should_behave_like "a working HTTP request"
     end
-    
+
     describe "and make a POST request with Net::HTTP::Post.new" do
       before do
         Net::HTTP.start('google.com') do |http|
@@ -167,7 +171,7 @@ describe "Artifice" do
   end
 
   describe "when activating with a block" do
-    
+
     before do
       ::Net::HTTP.should == NET_HTTP
     end
@@ -188,7 +192,7 @@ describe "Artifice" do
           ::Net::HTTP.should == Artifice::Net::HTTP
           raise 'Boom!'
         end
-      }.should raise_error
+      }.should raise_error(RuntimeError, 'Boom!')
     end
   end
 end
